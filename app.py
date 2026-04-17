@@ -12,7 +12,7 @@ def close_db(error):
 
 @app.route('/member', methods=['GET'])
 def get_members():
-    return 'This returns all the members.'
+    return 'This returns all the members with a GET.'
 
 @app.route('/member/<int:member_id>', methods=['GET'])
 def get_member(member_id):
@@ -29,10 +29,12 @@ def add_member():
     db.execute('INSERT INTO members (name, email, level) VALUES (?, ?, ?)', [name, email, level])
     db.commit()
     
-    member_cur = db.execute('select id, name, level from members where name = ?', [name])
+    member_cur = db.execute('select id, name, email, level from members where name = ?', [name])
     new_member = member_cur.fetchone()
 
     return jsonify(new_member)
+
+
 @app.route('/member/<int:member_id>', methods=['PUT', 'PATCH'])
 def edit_member(member_id):
     return 'This updates a member by ID.'
