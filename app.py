@@ -32,7 +32,7 @@ def add_member():
     member_cur = db.execute('select id, name, email, level from members where name = ?', [name])
     new_member = member_cur.fetchone()
 
-    return jsonify({'id': new_member['id'], 'name':new_member['name'], 'email':['email'], 'level':['level']})
+    return jsonify({'id': new_member['id'], 'name':new_member['name'], 'email':new_member['email'], 'level':new_member['level']})
 
 
 @app.route('/member/<int:member_id>', methods=['PUT', 'PATCH'])
