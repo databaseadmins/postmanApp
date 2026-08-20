@@ -12,7 +12,15 @@ def close_db(error):
 
 @app.route('/member', methods=['GET'])
 def get_members():
-    return 'This returns all the members with a GET.'
+    db= get_db()
+    members_cur = db.execute('select id, name, email, level from members')
+    members = members_cur.fetchall()
+    return_values = [] 
+    for member in members:
+        member_dict = {'id': member['id'], 'name': member['name'], 'email': member['email'], 'level': member['level']}
+        return_values.append(member_dict)        
+
+    return jsonify({'members': return_values})
 
 @app.route('/member/<int:member_id>', methods=['GET'])
 def get_member(member_id):
