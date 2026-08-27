@@ -24,7 +24,13 @@ def get_members():
 
 @app.route('/member/<int:member_id>', methods=['GET'])
 def get_member(member_id):
-    return 'This returns one member by ID'
+    db = get_db()
+    member_cur = db.execute('select id, name, email, level from members where id = ?', [member_id])
+    member = member_cur.fetchone()
+    if member:
+        return jsonify({'id': member['id'], 'name': member['name'], 'email': member['email'], 'level': member['level']})
+    else:
+        return jsonify({'error': 'Member not found'}), 404
 
 @app.route('/member', methods=['POST'])
 def add_member():
