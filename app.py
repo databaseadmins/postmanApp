@@ -3,6 +3,7 @@ from database import get_db
 
 
 app = Flask(__name__)
+#app.json.sort_keys = False  # Add this if you want the keys sorted.
 
 @app.teardown_appcontext
 def close_db(error):
@@ -51,11 +52,26 @@ def add_member():
 
 @app.route('/member/<int:member_id>', methods=['PUT', 'PATCH'])
 def edit_member(member_id):
-    return 'This updates a member by ID.'
+    new_member_data = request.get_json()
+    name = new_member_data.get('name')
+    email = new_member_data.get('email')
+    level = new_member_data.get('level')    
+
+    db = get_db()
+    db.execute('UPDATE members SET name = ?, email = ?, level = ? WHERE id = ?', [name, email, level, member_id])
+    db.commit()
+
+    member_cur = db.execute('select id, name, email, level from members where id = ?', [member_id])
+    new_member = member_cur.fetchone()
+    return jsonify({'member': {'id': new_member['id'], 'name': new_member['name'], 'email': new_member['email'], 'level': new_member['level']}})
+
 
 @app.route('/member/<int:member_id>', methods=['DELETE'])
 def delete_member(member_id):
-    return 'This removes a member by ID.'
+    db = get_db()
+    db.execute('DELETE FROM members WHERE id = ?', [member_id])
+    db.commit()
+    return jsonify({'message': 'Member deleted successfully'})
 
 if __name__ == '__main__':
     app.run(debug=True)
